@@ -74,7 +74,7 @@ export class Logger {
     const ctx = context ? yellow(`[${context}]`) : null;
 
     const str = [color(lvl), white(time), ctx, color(message)].filter((e) => e !== null);
-    const pure = [lvl, time, ctx, message].filter((e) => e !== null);
+    const pure = [lvl, time, context, message].filter((e) => e !== null);
 
     if (this.saveToFile) {
       if (level === 'error') this.errlog.write(pure.join('\t') + EOL);

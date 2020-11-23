@@ -1,0 +1,41 @@
+{
+  "name": "weakjs",
+  "version": "1.0.0",
+  "description": "logging package for nodejs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "publish": "npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattia-lau/nodejs-logging.git"
+  },
+  "keywords": [
+    "logging",
+    "logger",
+    "nodejs",
+    "rolling",
+    "daily",
+    "weekly",
+    "monthly",
+    "log"
+  ],
+  "author": "mattia-lau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattia-lau/nodejs-logging/issues"
+  },
+  "homepage": "https://github.com/mattia-lau/nodejs-logging#readme",
+  "devDependencies": {
+    "@types/cron": "^1.7.2",
+    "@types/node": "^12.12.31",
+    "prettier": "^2.2.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "cron": "^1.8.2",
+    "dayjs": "^1.9.6"
+  }
+}

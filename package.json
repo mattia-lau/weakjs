@@ -1,13 +1,14 @@
 {
   "name": "weakjs",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "logging package for nodejs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "publish": "npm publish"
+    "publish": "npm publish",
+    "exmaple": "ts-node example/index.ts"
   },
   "repository": {
     "type": "git",

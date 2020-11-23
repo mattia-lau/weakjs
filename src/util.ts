@@ -1,8 +1,6 @@
 import dayjs from 'dayjs';
 import { renameSync, statSync } from 'fs';
 import { join } from 'path';
-import { LogLevel } from '.';
-import { green, yellow, blue, red, cyan } from './colors';
 import { basePath, err, std } from './constant';
 
 export const isOverDay = (birthtime: string | number | Date) => {

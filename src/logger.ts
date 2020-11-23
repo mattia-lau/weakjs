@@ -58,7 +58,7 @@ export class Logger {
     this.errlog = createWriteStream(err, { flags: 'a' });
   }
 
-  private writeMessage(message: any, level: LogLevel, optionalParams: Record<string, unknown>) {
+  private writeMessage(message: any, level: LogLevel, optionalParams: Record<string, unknown> = {}) {
     const time = this.getTime();
 
     message = convertToText(message);

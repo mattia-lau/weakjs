@@ -71,10 +71,10 @@ export class Logger {
 
     const color = colorize(level);
     const lvl = `[${level.toLocaleUpperCase()}]`;
-    const ctx = yellow(`[${context}]`);
+    const ctx = context ? yellow(`[${context}]`) : null;
 
-    const str = [color(lvl), white(time), ctx, color(message)];
-    const pure = [lvl, time, ctx, message];
+    const str = [color(lvl), white(time), ctx, color(message)].filter((e) => e !== null);
+    const pure = [lvl, time, ctx, message].filter((e) => e !== null);
 
     if (this.saveToFile) {
       if (level === 'error') this.errlog.write(pure.join('\t') + EOL);

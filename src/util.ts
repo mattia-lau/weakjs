@@ -44,6 +44,8 @@ export const rename = (type: string, rolling?: 'daily' | 'weekly' | 'monthly') =
 export const convertToText = (obj: any) => {
   const string = [];
 
+  if (!obj) return;
+
   if (obj instanceof Error) {
     const err: Error = obj;
     string.push(err.message, '\t', err.stack);
@@ -64,7 +66,7 @@ export const convertToText = (obj: any) => {
   } else if (typeof obj == 'function') {
     string.push(obj.toString());
   } else {
-    string.push(JSON.stringify(obj));
+    string.push(JSON.stringify(obj), null, 2);
   }
 
   return string.join('');

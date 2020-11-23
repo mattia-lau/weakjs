@@ -65,9 +65,11 @@ export class Logger {
 
     const { context, ...other } = optionalParams;
 
-    Object.values(other).forEach((row) => {
-      message += '\t' + convertToText(row);
-    });
+    if (other) {
+      Object.values(other).forEach((row) => {
+        message += '\t' + convertToText(row);
+      });
+    }
 
     const color = colorize(level);
     const lvl = `[${level.toLocaleUpperCase()}]`;

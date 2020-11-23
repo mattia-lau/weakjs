@@ -1,4 +1,15 @@
 "use strict";
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -19,8 +30,7 @@ var Logger = /** @class */ (function () {
     function Logger(config) {
         var _this = this;
         this.config = config;
-        var _a = config.saveToFile, saveToFile = _a === void 0 ? false : _a, _b = config.rolling, rolling = _b === void 0 ? 'daily' : _b, _c = config.context, context = _c === void 0 ? '' : _c, _d = config.dateFormat, dateFormat = _d === void 0 ? 'YYYY-MM-DD HH:mm:ss' : _d;
-        this.context = context;
+        var _a = config.saveToFile, saveToFile = _a === void 0 ? false : _a, _b = config.rolling, rolling = _b === void 0 ? 'daily' : _b, _c = config.dateFormat, dateFormat = _c === void 0 ? 'YYYY-MM-DD HH:mm:ss' : _c;
         this.saveToFile = saveToFile;
         this.dateFormat = dateFormat;
         if (saveToFile) {
@@ -52,14 +62,15 @@ var Logger = /** @class */ (function () {
     Logger.prototype.writeMessage = function (message, level, optionalParams) {
         var time = this.getTime();
         message = util_1.convertToText(message);
-        optionalParams.forEach(function (row) {
+        var context = optionalParams.context, other = __rest(optionalParams, ["context"]);
+        Object.values(other).forEach(function (row) {
             message += '\t' + util_1.convertToText(row);
         });
         var color = colors_1.colorize(level);
         var lvl = "[" + level.toLocaleUpperCase() + "]";
-        var context = colors_1.yellow("[" + this.context + "]");
-        var str = [color(lvl), colors_1.white(time), context, color(message)];
-        var pure = [lvl, time, context, message];
+        var ctx = colors_1.yellow("[" + context + "]");
+        var str = [color(lvl), colors_1.white(time), ctx, color(message)];
+        var pure = [lvl, time, ctx, message];
         if (this.saveToFile) {
             if (level === 'error')
                 this.errlog.write(pure.join('\t') + os_1.EOL);
@@ -68,39 +79,19 @@ var Logger = /** @class */ (function () {
         }
         console.log(str.join('\t'));
     };
-    Logger.prototype.info = function (message) {
-        var optionalParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            optionalParams[_i - 1] = arguments[_i];
-        }
+    Logger.prototype.info = function (message, optionalParams) {
         this.writeMessage(message, 'info', optionalParams);
     };
-    Logger.prototype.debug = function (message) {
-        var optionalParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            optionalParams[_i - 1] = arguments[_i];
-        }
+    Logger.prototype.debug = function (message, optionalParams) {
         this.writeMessage(message, 'debug', optionalParams);
     };
-    Logger.prototype.error = function (message) {
-        var optionalParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            optionalParams[_i - 1] = arguments[_i];
-        }
+    Logger.prototype.error = function (message, optionalParams) {
         this.writeMessage(message, 'error', optionalParams);
     };
-    Logger.prototype.verbose = function (message) {
-        var optionalParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            optionalParams[_i - 1] = arguments[_i];
-        }
+    Logger.prototype.verbose = function (message, optionalParams) {
         this.writeMessage(message, 'verbose', optionalParams);
     };
-    Logger.prototype.warn = function (message) {
-        var optionalParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            optionalParams[_i - 1] = arguments[_i];
-        }
+    Logger.prototype.warn = function (message, optionalParams) {
         this.writeMessage(message, 'warn', optionalParams);
     };
     Logger.prototype.getTime = function () {

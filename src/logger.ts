@@ -6,7 +6,7 @@ import { EOL } from 'os';
 import { colorize, white, yellow } from './colors';
 import { basePath, err, std } from './constant';
 import Rolling from './rolling';
-import { IConfig, LogLevel } from './types';
+import { WeakConfig, LogLevel } from './types';
 import { convertToText, isOverDay, isOverMonth, isOverWeek, rename } from './util';
 
 dayjs.extend(isBetween);
@@ -16,14 +16,12 @@ export class Logger {
   private stdlog: WriteStream;
   private errlog: WriteStream;
   private saveToFile: boolean;
-  private context: string;
-  private config: IConfig;
+  private config: WeakConfig;
   private dateFormat: string;
 
-  constructor(config: IConfig) {
+  constructor(config: WeakConfig) {
     this.config = config;
-    const { saveToFile = false, rolling = 'daily', context = '', dateFormat = 'YYYY-MM-DD HH:mm:ss' } = config;
-    this.context = context;
+    const { saveToFile = false, rolling = 'daily', dateFormat = 'YYYY-MM-DD HH:mm:ss' } = config;
     this.saveToFile = saveToFile;
     this.dateFormat = dateFormat;
     if (saveToFile) {
@@ -60,20 +58,23 @@ export class Logger {
     this.errlog = createWriteStream(err, { flags: 'a' });
   }
 
-  private writeMessage(message: any, level: LogLevel, optionalParams: any[]) {
+  private writeMessage(message: any, level: LogLevel, optionalParams: Record<string, unknown>) {
     const time = this.getTime();
 
     message = convertToText(message);
-    optionalParams.forEach((row) => {
+
+    const { context, ...other } = optionalParams;
+
+    Object.values(other).forEach((row) => {
       message += '\t' + convertToText(row);
     });
 
     const color = colorize(level);
     const lvl = `[${level.toLocaleUpperCase()}]`;
-    const context = yellow(`[${this.context}]`);
+    const ctx = yellow(`[${context}]`);
 
-    const str = [color(lvl), white(time), context, color(message)];
-    const pure = [lvl, time, context, message];
+    const str = [color(lvl), white(time), ctx, color(message)];
+    const pure = [lvl, time, ctx, message];
 
     if (this.saveToFile) {
       if (level === 'error') this.errlog.write(pure.join('\t') + EOL);
@@ -83,23 +84,23 @@ export class Logger {
     console.log(str.join('\t'));
   }
 
-  public info(message: any, ...optionalParams: any[]) {
+  public info(message: any, optionalParams?: Record<string, unknown>) {
     this.writeMessage(message, 'info', optionalParams);
   }
 
-  public debug(message: any, ...optionalParams: any[]) {
+  public debug(message: any, optionalParams?: Record<string, unknown>) {
     this.writeMessage(message, 'debug', optionalParams);
   }
 
-  public error(message: any, ...optionalParams: any[]) {
+  public error(message: any, optionalParams?: Record<string, unknown>) {
     this.writeMessage(message, 'error', optionalParams);
   }
 
-  public verbose(message: any, ...optionalParams: any[]) {
+  public verbose(message: any, optionalParams?: Record<string, unknown>) {
     this.writeMessage(message, 'verbose', optionalParams);
   }
 
-  public warn(message: any, ...optionalParams: any[]) {
+  public warn(message: any, optionalParams?: Record<string, unknown>) {
     this.writeMessage(message, 'warn', optionalParams);
   }
 

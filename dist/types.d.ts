@@ -1,7 +1,6 @@
-export interface IConfig {
-    saveToFile: boolean;
+export interface WeakConfig {
+    saveToFile?: boolean;
     rolling?: 'daily' | 'weekly' | 'monthly';
-    context?: string;
     timezone?: string;
     dateFormat?: string;
 }

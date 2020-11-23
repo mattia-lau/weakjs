@@ -19,7 +19,7 @@ export class Logger {
   private config: WeakConfig;
   private dateFormat: string;
 
-  constructor(config: WeakConfig) {
+  constructor(config?: WeakConfig) {
     this.config = config;
     const { saveToFile = false, rolling = 'daily', dateFormat = 'YYYY-MM-DD HH:mm:ss' } = config;
     this.saveToFile = saveToFile;

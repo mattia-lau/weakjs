@@ -66,7 +66,7 @@ export const convertToText = (obj: any) => {
   } else if (typeof obj == 'function') {
     string.push(obj.toString());
   } else {
-    string.push(JSON.stringify(obj), null, 2);
+    string.push(JSON.stringify(obj, null, 2));
   }
 
   return string.join('');

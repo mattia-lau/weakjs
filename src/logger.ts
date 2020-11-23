@@ -6,7 +6,7 @@ import { EOL } from 'os';
 import { colorize, white, yellow } from './colors';
 import { basePath, err, std } from './constant';
 import Rolling from './rolling';
-import { WeakConfig, LogLevel } from './types';
+import { LogLevel, WeakConfig } from './types';
 import { convertToText, isOverDay, isOverMonth, isOverWeek, rename } from './util';
 
 dayjs.extend(isBetween);
@@ -58,18 +58,10 @@ export class Logger {
     this.errlog = createWriteStream(err, { flags: 'a' });
   }
 
-  private writeMessage(message: any, level: LogLevel, optionalParams: Record<string, unknown> = {}) {
+  private writeMessage(message: any, level: LogLevel, context?: string) {
     const time = this.getTime();
 
     message = convertToText(message);
-
-    const { context, ...other } = optionalParams;
-
-    if (other) {
-      Object.values(other).forEach((row) => {
-        message += '\t' + convertToText(row);
-      });
-    }
 
     const color = colorize(level);
     const lvl = `[${level.toLocaleUpperCase()}]`;
@@ -86,24 +78,24 @@ export class Logger {
     console.log(str.join('\t'));
   }
 
-  public info(message: any, optionalParams?: Record<string, unknown>) {
-    this.writeMessage(message, 'info', optionalParams);
+  public info(message: any, context?: string) {
+    this.writeMessage(message, 'info', context);
   }
 
-  public debug(message: any, optionalParams?: Record<string, unknown>) {
-    this.writeMessage(message, 'debug', optionalParams);
+  public debug(message: any, context?: string) {
+    this.writeMessage(message, 'debug', context);
   }
 
-  public error(message: any, optionalParams?: Record<string, unknown>) {
-    this.writeMessage(message, 'error', optionalParams);
+  public error(message: any, context?: string) {
+    this.writeMessage(message, 'error', context);
   }
 
-  public verbose(message: any, optionalParams?: Record<string, unknown>) {
-    this.writeMessage(message, 'verbose', optionalParams);
+  public verbose(message: any, context?: string) {
+    this.writeMessage(message, 'verbose', context);
   }
 
-  public warn(message: any, optionalParams?: Record<string, unknown>) {
-    this.writeMessage(message, 'warn', optionalParams);
+  public warn(message: any, context?: string) {
+    this.writeMessage(message, 'warn', context);
   }
 
   private getTime() {

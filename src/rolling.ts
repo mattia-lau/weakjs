@@ -1,10 +1,23 @@
 import { CronJob } from 'cron';
+import { existsSync, mkdirSync } from 'fs';
+import { basePath } from './constant';
 import { RollingPeriod } from './types';
 import { checkAndRename } from './util';
 export class Rolling {
   private rolling: RollingPeriod;
   private static instance: Rolling;
   private cronjob: CronJob = null;
+
+  constructor() {
+    this.checkLogFolder();
+    this.rename();
+  }
+
+  private checkLogFolder() {
+    if (!existsSync(basePath)) {
+      mkdirSync(basePath);
+    }
+  }
 
   public static getInstance(): Rolling {
     if (!Rolling.instance) {
@@ -19,8 +32,7 @@ export class Rolling {
       new CronJob(
         this.getCronExpression(),
         () => {
-          checkAndRename('stdout', this.rolling);
-          checkAndRename('stderr', this.rolling);
+          this.rename();
           callback();
         },
         null,
@@ -28,6 +40,11 @@ export class Rolling {
         timezone,
       );
     }
+  }
+
+  private rename() {
+    checkAndRename('stdout', this.rolling);
+    checkAndRename('stderr', this.rolling);
   }
 
   private getCronExpression() {

@@ -1,13 +1,13 @@
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import timezone from 'dayjs/plugin/timezone';
-import { createWriteStream, existsSync, mkdirSync, statSync, WriteStream } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, WriteStream } from 'fs';
 import { EOL } from 'os';
 import { colorize, white, yellow } from './colors';
 import { basePath, err, std } from './constant';
 import Rolling from './rolling';
-import { LogLevel, WeakConfig } from './types';
-import { convertToText, isOverDay, isOverMonth, isOverWeek, rename } from './util';
+import { LogLevel, RollingPeriod, WeakConfig } from './types';
+import { checkAndRename, convertToText } from './util';
 
 dayjs.extend(isBetween);
 dayjs.extend(timezone);
@@ -16,16 +16,19 @@ export class Logger {
   private stdlog: WriteStream;
   private errlog: WriteStream;
   private saveToFile: boolean;
-  private config: WeakConfig;
   private dateFormat: string;
+  private rolling: RollingPeriod;
 
-  constructor(config?: WeakConfig) {
+  constructor(private readonly config?: WeakConfig) {
     this.config = config;
     const { saveToFile = false, rolling = 'daily', dateFormat = 'YYYY-MM-DD HH:mm:ss' } = config;
     this.saveToFile = saveToFile;
     this.dateFormat = dateFormat;
+    this.rolling = rolling;
     if (saveToFile) {
       this.init();
+      this.checkLogFileIsExisting();
+
       Rolling.getInstance().roll(
         rolling,
         () => {
@@ -36,26 +39,20 @@ export class Logger {
     }
   }
 
-  private rename(type: 'stdout' | 'stderr') {
-    if (existsSync(type === 'stdout' ? std : err)) {
-      const { birthtime } = statSync(type === 'stdout' ? std : err);
-      if (isOverDay(birthtime) || isOverWeek(birthtime) || isOverMonth(birthtime)) {
-        rename(type, this.config.rolling);
-      }
-    }
-  }
-
   private init() {
     if (!existsSync(basePath)) {
       mkdirSync(basePath);
     }
-    if (this.saveToFile) {
-      this.rename('stdout');
-      this.rename('stderr');
-    }
 
     this.stdlog = createWriteStream(std, { flags: 'a' });
     this.errlog = createWriteStream(err, { flags: 'a' });
+  }
+
+  private checkLogFileIsExisting() {
+    if (this.saveToFile) {
+      checkAndRename('stdout', this.rolling);
+      checkAndRename('stderr', this.rolling);
+    }
   }
 
   private writeMessage(message: any, level: LogLevel, context?: string) {
@@ -65,7 +62,8 @@ export class Logger {
 
     const color = colorize(level);
     const lvl = `[${level.toLocaleUpperCase()}]`;
-    const ctx = context ? yellow(`[${context}]`) : null;
+    context = context ? `[${context}]` : null;
+    const ctx = context ? yellow(context) : null;
 
     const str = [color(lvl), white(time), ctx, color(message)].filter((e) => e !== null);
     const pure = [lvl, time, context, message].filter((e) => e !== null);

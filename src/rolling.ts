@@ -1,10 +1,8 @@
-import { CronJob } from "cron";
-import { existsSync } from "fs";
-import { err, std } from "./constant";
-import { rename } from "./util";
-
+import { CronJob } from 'cron';
+import { RollingPeriod } from './types';
+import { checkAndRename } from './util';
 export class Rolling {
-  private rolling: "daily" | "weekly" | "monthly";
+  private rolling: RollingPeriod;
   private static instance: Rolling;
   private cronjob: CronJob = null;
 
@@ -15,37 +13,27 @@ export class Rolling {
     return Rolling.instance;
   }
 
-  public roll(
-    rolling: "daily" | "weekly" | "monthly",
-    callback: Function,
-    timezone?: string
-  ) {
+  public roll(rolling: RollingPeriod, callback: Function, timezone?: string) {
     if (this.cronjob === null) {
       this.rolling = rolling;
       new CronJob(
         this.getCronExpression(),
         () => {
-          if (existsSync(std)) {
-            rename("stdout", this.rolling);
-          }
-
-          if (existsSync(err)) {
-            rename("stderr", this.rolling);
-          }
-
+          checkAndRename('stdout', this.rolling);
+          checkAndRename('stderr', this.rolling);
           callback();
         },
         null,
         true,
-        timezone
+        timezone,
       );
     }
   }
 
   private getCronExpression() {
-    if (this.rolling === "daily") return "0 0 * * *";
-    else if (this.rolling === "weekly") return "0 0 * * 0";
-    else return "0 0 1 * *";
+    if (this.rolling === 'daily') return '0 0 * * *';
+    else if (this.rolling === 'weekly') return '0 0 * * 0';
+    else return '0 0 1 * *';
   }
 }
 

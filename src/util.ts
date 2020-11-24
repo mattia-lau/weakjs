@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
-import { renameSync, statSync } from 'fs';
+import { existsSync, renameSync, statSync } from 'fs';
 import { join } from 'path';
 import { basePath, err, std } from './constant';
+import { RollingPeriod } from './types';
 
 export const isOverDay = (birthtime: string | number | Date) => {
   return dayjs().diff(birthtime, 'day') >= 1;
@@ -19,7 +20,16 @@ export const isOverMonth = (birthtime: string | number | Date) => {
   return dayjs(birthtime).toDate().getMonth() !== new Date().getMonth();
 };
 
-export const rename = (type: string, rolling?: 'daily' | 'weekly' | 'monthly') => {
+export const checkAndRename = (type: 'stdout' | 'stderr', rolling: RollingPeriod) => {
+  if (existsSync(type === 'stdout' ? std : err)) {
+    const { birthtime } = statSync(type === 'stdout' ? std : err);
+    if (isOverDay(birthtime) || isOverWeek(birthtime) || isOverMonth(birthtime)) {
+      rename(type, rolling);
+    }
+  }
+};
+
+const rename = (type: string, rolling?: RollingPeriod) => {
   let filename;
 
   const { birthtime } = statSync(type === 'stdout' ? std : err);

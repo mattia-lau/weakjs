@@ -4,6 +4,7 @@ export interface WeakConfig {
   timezone?: string;
 
   dateFormat?: string;
+  maxNumberOfFiles?: number;
 }
 
 export type LogLevel = 'info' | 'debug' | 'error' | 'verbose' | 'warn';

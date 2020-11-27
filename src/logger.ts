@@ -15,21 +15,26 @@ dayjs.extend(timezone);
 export class Logger {
   private stdlog: WriteStream;
   private errlog: WriteStream;
+
   private saveToFile: boolean;
   private dateFormat: string;
   private rolling: RollingPeriod;
+  private maxNumberOfFiles: number;
 
   constructor(private readonly config?: WeakConfig) {
     this.config = config;
-    const { saveToFile = false, rolling = 'daily', dateFormat = 'YYYY-MM-DD HH:mm:ss' } = config;
+    const { saveToFile = false, rolling = 'daily', dateFormat = 'YYYY-MM-DD HH:mm:ss', maxNumberOfFiles = 7 } = config;
     this.saveToFile = saveToFile;
     this.dateFormat = dateFormat;
     this.rolling = rolling;
+    this.maxNumberOfFiles = maxNumberOfFiles;
+
     if (saveToFile) {
       this.init();
       this.checkLogFileIsExisting();
 
       Rolling.getInstance().roll(
+        maxNumberOfFiles,
         rolling,
         () => {
           this.init();

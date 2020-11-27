@@ -1,6 +1,6 @@
 {
   "name": "weakjs",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "logging package for nodejs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,11 +8,11 @@
     "prebuild": "rimraf dist",
     "build": "tsc",
     "publish": "npm publish",
-    "exmaple": "ts-node example/index.ts"
+    "example": "ts-node example/index.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mattia-lau/nodejs-logging.git"
+    "url": "git+https://github.com/mattia-lau/weakjs.git"
   },
   "keywords": [
     "logging",
@@ -27,9 +27,9 @@
   "author": "mattia-lau",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mattia-lau/nodejs-logging/issues"
+    "url": "https://github.com/mattia-lau/weakjs/issues"
   },
-  "homepage": "https://github.com/mattia-lau/nodejs-logging#readme",
+  "homepage": "https://github.com/mattia-lau/weakjs#readme",
   "devDependencies": {
     "@types/cron": "^1.7.2",
     "@types/node": "^12.12.31",
@@ -38,6 +38,8 @@
   },
   "dependencies": {
     "cron": "^1.8.2",
-    "dayjs": "^1.9.6"
+    "dayjs": "^1.9.6",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.0.0"
   }
 }

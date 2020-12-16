@@ -47,7 +47,7 @@ export class Rolling {
   private removeExtraLogs(maxNumberOfFiles: number) {
     const files = readdirSync(basePath)
       .map((e) => ({ ...fstatSync(openSync(join(basePath, e), 'r')), filename: e }))
-      .sort((a, b) => a.birthtime.getTime() - b.birthtime.getTime());
+      .sort((a, b) => b.birthtime.getTime() - a.birthtime.getTime());
 
     // error and stdout
     const stdout = files.filter((e) => e.filename.indexOf('stdout') > -1);
